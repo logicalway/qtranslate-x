@@ -37,7 +37,7 @@ function qtranxf_updateGettextDatabasesEx($force = false, $only_for_language = '
 		return false;
 	}
 
-	set_time_limit(300);
+	@set_time_limit(300);
 
 	if(empty($only_for_language)){
 		global $q_config;
