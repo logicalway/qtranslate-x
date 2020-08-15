@@ -269,6 +269,7 @@ function qtranxf_add_language_menu_item(&$items, &$menu_order, &$itemid, $key, $
 	}
 	if(empty($item->attr_title))
 		$item->attr_title = $q_config['language_name'][$toplang];
+    $item->classes = array();
 	//$item->classes[] = 'qtranxs_flag_'.$language;
 	$item->classes[] = 'qtranxs-lang-menu';
 	$item->classes[] = 'qtranxs-lang-menu-'.$toplang;
