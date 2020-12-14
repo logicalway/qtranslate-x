@@ -902,7 +902,7 @@ function qtranxf_decode_name_value_pair(&$a,$nam,$val) {
 		if(empty($s)){
 			$a[$n][$k] = $val;
 		}else{
-			qtranxf_decode_name_value_pair($a[$n],$k.$s,$val);//recursive call
+			qtranxf_decode_name_value_pair($a[$n],$k.$s,$val); // recursive call
 		}
 	}else{
 		$a[$nam] = $val;
@@ -939,3 +939,137 @@ add_filter('manage_posts_columns', 'qtranxf_languageColumnHeader');
 add_filter('manage_posts_custom_column', 'qtranxf_languageColumn');
 add_filter('manage_pages_columns', 'qtranxf_languageColumnHeader');
 add_filter('manage_pages_custom_column', 'qtranxf_languageColumn');
+
+
+
+
+
+
+function set_custom_edit_book_columns($columns) {
+
+    $new_column = array();
+    foreach( $columns as $key => $value ) {
+
+        if( $key == 'categories' ) {
+            unset($columns['categories']);
+            $new_column["category"] = __('Categories');
+        } else {
+            $new_column[$key] = $value;
+        }
+
+    }
+
+    return $new_column;
+}
+add_filter('manage_posts_columns', 'set_custom_edit_book_columns');
+
+
+function department_taxonomy_rows( $column, $post_id ) {
+
+    switch ( $column ) {
+
+        case 'category' :
+
+            $terms = get_the_term_list( $post_id , 'category' , '' , ',' , '' );
+
+            if ( is_string( $terms ) ) {
+
+                $terms = strip_tags($terms);
+                if( function_exists('qtranxf_getLanguage') ) {
+                    $terms = codession_qtranslatex_string($terms)[qtranxf_getLanguage()];
+                }
+                echo $terms;
+
+            }
+            break;
+
+    }
+
+
+}
+add_filter('manage_posts_custom_column', 'department_taxonomy_rows',10 , 2 );
+
+
+/*
+ * This function breaks q-translate string into array per language.
+ *
+ * @param - {string}$content - the q-translate string Eg : [:en]Title in English[:fr]Title in French
+ * @return {array/bool} $lang - an associative array with language id as key and content as value for each language element consist or false if wrong string provided.
+ *
+ * source : https://wordpress.stackexchange.com/questions/232953/how-to-get-post-title-by-locale-with-qtranslate-x
+ *
+ */
+function codession_qtranslatex_string( $content ) {
+    $total_lang = substr_count( $content, '[:' );
+    $lang = array();
+    $start_index = 0;
+
+    if ( $total_lang > 0 ) {
+        while( $total_lang-- ) {
+            // last language
+            if ( $total_lang == 0 ) {
+                $lang_code = substr( $content, $start_index + 2, 2 );
+                $lang[ $lang_code ] = substr( $content, $start_index + 5 );
+                break;
+            }
+            // find the occurance of "[" from start
+            $end_index = strpos( $content, '[:', $start_index + 5 );
+            $lang_code = substr( $content, $start_index + 2, 2 );
+            if ( $end_index ) {
+                $lang[ $lang_code ] = substr( $content, $start_index + 5, $end_index - $start_index - 5 );
+                $start_index = $end_index;
+            } else {
+                return false;
+            }
+        }
+        return $lang;
+    } else {
+        return false;
+    }
+}
+
+
+/*
+
+
+add_filter( 'manage_posts_columns', 'set_custom_edit_book_columns' );
+add_action( 'manage_posts_custom_column' , 'custom_book_column', 10, 2 );
+
+function set_custom_edit_book_columns($columns) {
+    unset( $columns['author'] );
+    $columns['book_author'] = __( 'Author', 'your_text_domain' );
+    $columns['publisher'] = __( 'Publisher', 'your_text_domain' );
+
+    return $columns;
+}
+
+function custom_book_column( $column, $post_id ) {
+
+    ob_start();
+    echo "\n";
+    print_r($column);
+    $msg = ob_get_clean();
+    $msg.= "\n";
+
+    $log_file = dirname( __FILE__ ).'/_log.txt';
+    error_log($msg, 3, $log_file);
+
+    switch ( $column ) {
+
+        case 'book_author' :
+            $terms = get_the_term_list( $post_id , 'book_author' , '' , ',' , '' );
+            if ( is_string( $terms ) )
+                echo $terms;
+            else
+                _e( 'Unable to get author(s)', 'your_text_domain' );
+            break;
+
+        case 'publisher' :
+            echo get_post_meta( $post_id , 'publisher' , true );
+            break;
+    }
+}
+
+
+*/
+

@@ -393,7 +393,7 @@ function qtranxf_detect_language_front(&$url_info) {
 }
 
 function qtranxf_setcookie_language($lang, $cookie_name, $cookie_path, $cookie_domain = NULL, $secure = false){
-	//qtranxf_dbg_log('qtranxf_setcookie_language: lang='.$lang.'; cookie_name='.$cookie_name.'; cookie_path='.$cookie_path);
+    //qtranxf_dbg_log('qtranxf_setcookie_language: lang='.$lang.'; cookie_name='.$cookie_name.'; cookie_path='.$cookie_path);
 	@setcookie($cookie_name, $lang, time()+31536000, $cookie_path, $cookie_domain, $secure);//one year
 	//two weeks 1209600
 }
@@ -402,7 +402,7 @@ function qtranxf_set_language_cookie($lang){
 	global $q_config;
 	if(defined('WP_ADMIN')){
 		//qtranxf_dbg_log('qtranxf_set_language_cookie: QTX_COOKIE_NAME_ADMIN: lang=',$lang);
-		qtranxf_setcookie_language( $lang, QTX_COOKIE_NAME_ADMIN, ADMIN_COOKIE_PATH );
+		qtranxf_setcookie_language( $lang, QTX_COOKIE_NAME_ADMIN, ADMIN_COOKIE_PATH, NULL, true );
 	}elseif(!$q_config['disable_client_cookies']){
 		qtranxf_setcookie_language( $lang, QTX_COOKIE_NAME_FRONT, COOKIEPATH, NULL, $q_config['use_secure_cookie'] );
 	}
