@@ -953,6 +953,10 @@ function set_custom_edit_book_columns($columns) {
         if( $key == 'categories' ) {
             unset($columns['categories']);
             $new_column["category"] = __('Categories');
+
+        } else if( $key == 'taxonomy-rtcl_category' ) {
+            unset($columns['taxonomy-rtcl_category']);
+            $new_column["rtcl_category"] = __('Categories');
         } else {
             $new_column[$key] = $value;
         }
@@ -962,6 +966,7 @@ function set_custom_edit_book_columns($columns) {
     return $new_column;
 }
 add_filter('manage_posts_columns', 'set_custom_edit_book_columns');
+add_filter('manage_rtcl_listing_columns', 'set_custom_edit_book_columns');
 
 
 function department_taxonomy_rows( $column, $post_id ) {
@@ -983,11 +988,26 @@ function department_taxonomy_rows( $column, $post_id ) {
             }
             break;
 
-    }
+        case 'rtcl_category' :
 
+            $terms = get_the_term_list( $post_id , 'rtcl_category' , '' , ',' , '' );
+
+            if ( is_string( $terms ) ) {
+
+                $terms = strip_tags($terms);
+                if( function_exists('qtranxf_getLanguage') ) {
+                    $terms = codession_qtranslatex_string($terms)[qtranxf_getLanguage()];
+                }
+                echo $terms;
+
+            }
+            break;
+
+    }
 
 }
 add_filter('manage_posts_custom_column', 'department_taxonomy_rows',10 , 2 );
+add_filter('manage_rtcl_listing_custom_column', 'department_taxonomy_rows',10 , 2 );
 
 
 /*
