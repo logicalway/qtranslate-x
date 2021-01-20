@@ -221,7 +221,7 @@ var qTranslateX=function(pg)
 	 */
 	this.isLanguageEnabled=function(lang){ return !!qTranslateConfig.language_config[lang]; }
 
-	var setLangCookie=function(lang) { document.cookie='qtrans_edit_language='+lang+";secure"; }
+	var setLangCookie=function(lang) { document.cookie='qtrans_edit_language='+lang; }
 
 	qTranslateConfig.activeLanguage;
 	if(qTranslateConfig.LSB){
@@ -935,8 +935,7 @@ var qTranslateX=function(pg)
 				setEditorHooks(ed);
 			}
 		}
-		// window.addEventListener('load', loadTinyMceHooks);
-		loadTinyMceHooks();
+		window.addEventListener('load', loadTinyMceHooks);
 	}
 
 	if(!qTranslateConfig.onTabSwitchFunctions) qTranslateConfig.onTabSwitchFunctions=[];
