@@ -53,6 +53,10 @@ function qtranxf_wp_head(){
 	// skip the rest if 404
 	if(is_404()) return;
 
+    $home_slash="";
+    if ( is_front_page() || is_home() )
+        $home_slash="/";
+
 	// set links to translations of current page
 	foreach($q_config['enabled_languages'] as $lang) {
 		if(!empty($q_config['locale_html'][$lang])){
@@ -61,10 +65,10 @@ function qtranxf_wp_head(){
 			$hreflang = $lang;
 		}
 		//if($language != qtranxf_getLanguage())//standard requires them all
-		echo '<link hreflang="'.$hreflang.'" href="'.qtranxf_convertURL('',$lang,false,true).'" rel="alternate" />'.PHP_EOL;
+		echo '<link hreflang="'.$hreflang.'" href="'.qtranxf_convertURL('',$lang,false,true).$home_slash.'" rel="alternate" />'.PHP_EOL;
 	}
 	//https://support.google.com/webmasters/answer/189077
-	echo '<link hreflang="x-default" href="'.qtranxf_convertURL('',$q_config['default_language']).'" rel="alternate" />'.PHP_EOL;
+	echo '<link hreflang="x-default" href="'.qtranxf_convertURL('',$q_config['default_language']).$home_slash.'" rel="alternate" />'.PHP_EOL;
 
 	//qtranxf_add_css();// since 3.2.5 no longer needed
 }
@@ -206,6 +210,11 @@ function qtranxf_add_language_menu_item(&$items, &$menu_order, &$itemid, $key, $
 	$colon=true;//[shown|hidden]
 	$topflag=true;
 
+
+    $home_slash="";
+    if ( is_front_page() || is_home() )
+        $home_slash="/";
+
 	$p=strpos($item->url,'?');
 	if($p!==FALSE){
 		$qs=substr($item->url,$p+1);
@@ -243,7 +252,7 @@ function qtranxf_add_language_menu_item(&$items, &$menu_order, &$itemid, $key, $
 			break;
 		}
 		$item->title=empty($title)?'':$q_config['language_name'][$toplang];
-		$item->url=qtranxf_convertURL($url, $altlang, false, true);
+		$item->url=qtranxf_convertURL($url.$home_slash, $altlang, false, true);
 	}else{
 		$toplang=$language;
 		if(empty($title)){
@@ -626,7 +635,7 @@ function qtranxf_excludeUntranslatedPosts($where,$query) {//WP_Query
 	return $where;
 }
 
-function qtranxf_excludeUntranslatedPostComments($clauses, &$q/*WP_Comment_Query*/) {
+function qtranxf_excludeUntranslatedPostComments($clauses, $q) {  // &$q /* WP_Comment_Query */
 	global $wpdb;
 
 	//qtranxf_dbg_log('qtranxf_excludeUntranslatedPostComments: $clauses: ',$clauses);
